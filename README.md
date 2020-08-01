@@ -12,8 +12,16 @@ seeImg.py : Displays the image in well formatted way for a given time
 sectioningImage.py : Generating visualizable image which corresponds to the processed data for visualization
 
 
+V4
+---------------------
 
-New model
+v4preprocess.py : Water index, ndvi and burn index all in one.
+
+
+
+
+
+V3
 ---------------------
 
 
@@ -29,7 +37,7 @@ gettingChange.py : Getting change over 8 years of data (Warning huge array, abou
 
 
 
-Old model
+V1
 ---------------------
 
 classifyTest.py : Test file for classifying shifting cultivation
