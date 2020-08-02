@@ -143,9 +143,9 @@ from PIL import Image
     
     
 
-year=2013
+year=2007
 
-file=1
+file=2
 openpath="data/"+str(year)+"01"+str(file)+".tif"
 savepath=str(year)+"01"+str(file)      
    
@@ -163,22 +163,18 @@ r=ds.GetRasterBand(3).ReadAsArray()
 print('Getting band 4 (IR)')
 ir1=ds.GetRasterBand(4).ReadAsArray()
 
-print('Getting band 5 SWIRS')
-swirs1=ds.GetRasterBand(5).ReadAsArray()
 
 print('Getting band 7 SWIRL')
 swirl1=ds.GetRasterBand(7).ReadAsArray()
 
-print('Getting band 6 temp')
-t1=ds.GetRasterBand(6).ReadAsArray()
+
 
 print('Replacing nan values with mean')
 w1[np.isnan(w1)]=np.nanmean(w1)
 r[np.isnan(r)]=np.nanmean(r)
 ir1[np.isnan(ir1)]=np.nanmean(ir1)
-swirs1[np.isnan(swirs1)]=np.nanmean(swirs1)
 swirl1[np.isnan(swirl1)]=np.nanmean(swirl1)
-t1[np.isnan(t1)]=np.nanmean(t1)
+
 
 
 
@@ -186,13 +182,9 @@ print('searching area with water')
 w1=w1/ir1
 
 print('searching burned area')
-b1=(swirs1-swirl1)/(swirs1+swirl1)
+b1=(ir1-swirl1)/(ir1+swirl1)
 
-print('Searching for high temp')
-t1[np.isnan(t1)]=np.nanmean(t1)
-t1-=t1.mean()
-t1[t1<0]=0
-t1/=10
+
 
 
 print('Generating ndvi')
@@ -202,6 +194,7 @@ diff1=ir1/r
 
 diff1/=(diff1+1)
 diff1*=255
+diff1[np.isnan(diff1)]=0
 
 openpath="data/"+str(year)+"07"+str(file)+".tif"
 savepath=str(year)+"07"+str(file)      
@@ -222,34 +215,25 @@ r=ds.GetRasterBand(3).ReadAsArray()
 print('Getting band 4 (IR)')
 ir2=ds.GetRasterBand(4).ReadAsArray()
 
-print('Getting band 5 SWIRS')
-swirs2=ds.GetRasterBand(5).ReadAsArray()
 
 print('Getting band 7 SWIRL')
 swirl2=ds.GetRasterBand(7).ReadAsArray()
 
-print('Getting band 6 temp')
-t2=ds.GetRasterBand(6).ReadAsArray()
+
 
 print('Replacing nan values with mean')
 w2[np.isnan(w2)]=np.nanmean(w2)
 r[np.isnan(r)]=np.nanmean(r)
 ir2[np.isnan(ir2)]=np.nanmean(ir2)
-swirs2[np.isnan(swirs2)]=np.nanmean(swirs2)
 swirl2[np.isnan(swirl2)]=np.nanmean(swirl2)
-t2[np.isnan(t2)]=np.nanmean(t2)
+
 
 print('searching area with water')
 w2=w2/ir2
 
 print('searching burned area')
-b2=(swirs2-swirl2)/(swirs2+swirl2)
+b2=(ir2-swirl2)/(ir2+swirl2)
 
-print('Searching for high temp')
-t2[np.isnan(t2)]=np.nanmean(t2)
-t2-=t2.mean()
-t2[t2<0]=0
-t2/=10
 
 
 print('Generating ndvi')
@@ -259,38 +243,36 @@ diff2=ir2/r
 
 diff2/=(diff2+1)
 diff2*=255
-
-
-print('Calculating difference')
-mean1=np.nanmean(diff1)
-mean2=np.nanmean(diff2)
-
-diff1*=((mean2+mean1)/2)/mean1
-diff2*=((mean2+mean1)/2)/mean2
-
-diff1[np.isnan(diff1)]=0
 diff2[np.isnan(diff2)]=0
+
+print('Getting agricultaral land from ndvi')
+#crop from 153 to 193
+diff1-=153
+diff1*=(diff1*255)/(193-153)
+
 diff1[diff1>255]=255
 diff1[diff1<0]=0
 diff2[diff2>255]=255
 diff2[diff2<0]=0
 
+
+print('Calculating difference')
+# mean1=np.nanmean(diff1)
+# mean2=np.nanmean(diff2)
+
+# diff1*=((mean2+mean1)/2)/mean1
+# diff2*=((mean2+mean1)/2)/mean2
+
 diff=abs(diff2-diff1)
 
+print('Generating image from ndvi difference, water index, burn index')
 
-            
-print('Adding burn Index')
-diff+=b1
-diff+=b2
-
-print('Adding high temps')
-diff+=t1
-diff+=t2
-
-print('Generating image from ndvi difference, water index')
 for i in range(len(ir1)):
-    for j in range(len(ir1[0])):
-        if ir2[i][j]<5 or ir1[i][j]<5 or w1[i][j]>0.8 or w2[i][j]>0.8:
+    for j in range(len(ir1[0])):    
+        if min(b1[i][j],b2[i][j])<-0.2:
+            diff[i][j]+=(-318*(min(b1[i][j],b2[i][j])+0.2))
+        
+        if ir2[i][j]<5 or ir1[i][j]<5 or w1[i][j]>0.8 or w2[i][j]>0.8 or (diff1[i][j]!=0 and diff2[i][j]!=0):
             diff[i][j]=0
 
 print('Processing to form image')
@@ -299,5 +281,5 @@ diff[diff>255]=255
 diff[diff<0]=0
 
 diff = np.array(diff, dtype=np.uint8)
-del diff1,diff2,ir1,ir2,r,w1,w2
+
 Image.fromarray(diff).show()
