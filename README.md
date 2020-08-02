@@ -11,6 +11,8 @@ seeImg.py : Displays the image in well formatted way for a given time
 
 sectioningImage.py : Generating visualizable image which corresponds to the processed data for visualization
 
+earthEngineGetData.js : Program to get data of LANDSAT-7 with no cloud cover at interval of 6 months
+
 
 V4
 ---------------------
