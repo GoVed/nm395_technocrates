@@ -4,248 +4,300 @@ import math
 from PIL import Image
 
 # # this allows GDAL to throw Python Exceptions
-gdal.UseExceptions()
+# gdal.UseExceptions()
 
-year=2000
-while year<2020:
-    file=1
-    while file<4:
-        openpath="data/"+str(year)+"01"+str(file)+".tif"
-        savepath=str(year)+str(file)      
+# year=2000
+# while year<2020:
+#     file=1
+#     while file<4:
+#         openpath="data/"+str(year)+"01"+str(file)+".tif"
+#         savepath=str(year)+str(file)      
            
-        print('Opening',openpath)
-        print('Savepath = ',savepath)
-        ds = gdal.Open(openpath)
-        print(ds)
+#         print('Opening',openpath)
+#         print('Savepath = ',savepath)
+#         ds = gdal.Open(openpath)
+#         print(ds)
         
-        print('Getting band 2 for water')
-        w1=ds.GetRasterBand(2).ReadAsArray()
+#         print('Getting band 2 for water')
+#         w1=ds.GetRasterBand(2).ReadAsArray()
         
-        print('Getting band 3 for vegetation')
-        r=ds.GetRasterBand(3).ReadAsArray()
+#         print('Getting band 3 for vegetation')
+#         r=ds.GetRasterBand(3).ReadAsArray()
         
-        print('Getting band 4 (IR)')
-        ir1=ds.GetRasterBand(4).ReadAsArray()
+#         print('Getting band 4 (IR)')
+#         ir1=ds.GetRasterBand(4).ReadAsArray()
         
         
-        print('searching area with water')
-        w1=w1/ir1
+#         print('searching area with water')
+#         w1=w1/ir1
         
-        print('searching burned area')
-        b1=1/((0.1-r)**2+(0.06-ir1)**2)
-        b1[np.isnan(b1)]=0
-        b1=b1*255/b1.max()
+#         print('searching burned area')
+#         b1=1/((0.1-r)**2+(0.06-ir1)**2)
+#         b1[np.isnan(b1)]=0
+#         b1=b1*255/b1.max()
         
-        print('Generating ndvi')
-        r[r==0]=0.1
-        ir1[ir1==0]=0.1
-        diff1=ir1/r
+#         print('Generating ndvi')
+#         r[r==0]=0.1
+#         ir1[ir1==0]=0.1
+#         diff1=ir1/r
         
-        diff1/=(diff1+1)
-        diff1*=255
+#         diff1/=(diff1+1)
+#         diff1*=255
         
-        openpath="data/"+str(year)+"07"+str(file)+".tif"     
+#         openpath="data/"+str(year)+"07"+str(file)+".tif"     
            
-        print('Opening',openpath)
+#         print('Opening',openpath)
 
-        ds = gdal.Open(openpath)
-        print(ds)
+#         ds = gdal.Open(openpath)
+#         print(ds)
         
         
         
-        print('Getting band 2 for water')
-        w2=ds.GetRasterBand(2).ReadAsArray()
+#         print('Getting band 2 for water')
+#         w2=ds.GetRasterBand(2).ReadAsArray()
         
-        print('Getting band 3')
-        r=ds.GetRasterBand(3).ReadAsArray()
+#         print('Getting band 3')
+#         r=ds.GetRasterBand(3).ReadAsArray()
         
-        print('Getting band 4 (IR)')
-        ir2=ds.GetRasterBand(4).ReadAsArray()
-        
-        
-        print('searching area with water')
-        w2=w2/ir2
-        
-        print('searching burned area')
-        b2=1/((0.1-r)**2+(0.06-ir2)**2)
-        b2[np.isnan(b2)]=0
-        b2=b2*255/b2.max()
-        
-        print('Generating ndvi')
-        r[r==0]=0.1
-        ir2[ir2==0]=0.1
-        diff2=ir2/r
-        
-        diff2/=(diff2+1)
-        diff2*=255
+#         print('Getting band 4 (IR)')
+#         ir2=ds.GetRasterBand(4).ReadAsArray()
         
         
-        print('Calculating difference')
-        mean1=np.nanmean(diff1)
-        mean2=np.nanmean(diff2)
+#         print('searching area with water')
+#         w2=w2/ir2
         
-        diff1*=((mean2+mean1)/2)/mean1
-        diff2*=((mean2+mean1)/2)/mean2
+#         print('searching burned area')
+#         b2=1/((0.1-r)**2+(0.06-ir2)**2)
+#         b2[np.isnan(b2)]=0
+#         b2=b2*255/b2.max()
         
-        diff1[np.isnan(diff1)]=0
-        diff2[np.isnan(diff2)]=0
-        diff1[diff1>255]=255
-        diff1[diff1<0]=0
-        diff2[diff2>255]=255
-        diff2[diff2<0]=0
+#         print('Generating ndvi')
+#         r[r==0]=0.1
+#         ir2[ir2==0]=0.1
+#         diff2=ir2/r
         
-        diff=abs(diff2-diff1)
+#         diff2/=(diff2+1)
+#         diff2*=255
         
-        print('Generating image from ndvi difference, water index')
-        for i in range(len(ir1)):
-            for j in range(len(ir1[0])):
-                if ir2[i][j]<5 or ir1[i][j]<5 or w1[i][j]>0.8 or w2[i][j]>0.8:
-                    diff[i][j]=0
+        
+#         print('Calculating difference')
+#         mean1=np.nanmean(diff1)
+#         mean2=np.nanmean(diff2)
+        
+#         diff1*=((mean2+mean1)/2)/mean1
+#         diff2*=((mean2+mean1)/2)/mean2
+        
+#         diff1[np.isnan(diff1)]=0
+#         diff2[np.isnan(diff2)]=0
+#         diff1[diff1>255]=255
+#         diff1[diff1<0]=0
+#         diff2[diff2>255]=255
+#         diff2[diff2<0]=0
+        
+#         diff=abs(diff2-diff1)
+        
+#         print('Generating image from ndvi difference, water index')
+#         for i in range(len(ir1)):
+#             for j in range(len(ir1[0])):
+#                 if ir2[i][j]<5 or ir1[i][j]<5 or w1[i][j]>0.8 or w2[i][j]>0.8:
+#                     diff[i][j]=0
                     
-        print('Adding burn Index')
-        diff+=b1
-        diff+=b2
-        diff[np.isnan(diff)]=0
-        diff[diff>255]=255
-        diff[diff<0]=0
+#         print('Adding burn Index')
+#         diff+=b1
+#         diff+=b2
+#         diff[np.isnan(diff)]=0
+#         diff[diff>255]=255
+#         diff[diff<0]=0
         
-        diff = np.array(diff, dtype=np.uint8)
-        del b1,b2,diff1,diff2,ir1,ir2,r,w1,w2
+#         diff = np.array(diff, dtype=np.uint8)
+#         del b1,b2,diff1,diff2,ir1,ir2,r,w1,w2
 
-        print('Splitting images')
-        M=100
-        N=100
-        sdiff = np.full((math.ceil(diff.shape[0]/M)*math.ceil(diff.shape[1]/N),M,N),0,np.uint8)
+#         print('Splitting images')
+#         M=100
+#         N=100
+#         sdiff = np.full((math.ceil(diff.shape[0]/M)*math.ceil(diff.shape[1]/N),M,N),0,np.uint8)
         
-        i=0
-        for x in range(0,diff.shape[0],M):
-            for y in range(0,diff.shape[1],N):
-                s = diff[x:x+M,y:y+N]
-                sdiff[i,0:s.shape[0], 0:s.shape[1]]=s
+#         i=0
+#         for x in range(0,diff.shape[0],M):
+#             for y in range(0,diff.shape[1],N):
+#                 s = diff[x:x+M,y:y+N]
+#                 sdiff[i,0:s.shape[0], 0:s.shape[1]]=s
                 
-                i+=1
+#                 i+=1
         
-        diff=""
+#         diff=""
         
-        print('Saving images')
-        for i in range(len(sdiff)-1):
-            rname = 'v4img/'+savepath+'_'+str(i)+'.png'
+#         print('Saving images')
+#         for i in range(len(sdiff)-1):
+#             rname = 'v4img/'+savepath+'_'+str(i)+'.png'
                
-            rgbdiff=Image.fromarray(sdiff[i])
-            rgbdiff.save(rname)
+#             rgbdiff=Image.fromarray(sdiff[i])
+#             rgbdiff.save(rname)
             
-        file+=1
+#         file+=1
         
 
     
-    year+=1
+#     year+=1
     
     
     
 
-# year=2017
+year=2013
 
-# file=2
-# openpath="data/"+str(year)+"01"+str(file)+".tif"
-# savepath=str(year)+"01"+str(file)      
+file=1
+openpath="data/"+str(year)+"01"+str(file)+".tif"
+savepath=str(year)+"01"+str(file)      
    
-# print('Opening',openpath)
-# print('Savepath = ',savepath)
-# ds = gdal.Open(openpath)
-# print(ds)
+print('Opening',openpath)
+print('Savepath = ',savepath)
+ds = gdal.Open(openpath)
+print(ds)
 
-# print('Getting band 2 for water')
-# w1=ds.GetRasterBand(2).ReadAsArray()
+print('Getting band 2 for water')
+w1=ds.GetRasterBand(2).ReadAsArray()
 
-# print('Getting band 3 for vegetation')
-# r=ds.GetRasterBand(3).ReadAsArray()
+print('Getting band 3 for vegetation')
+r=ds.GetRasterBand(3).ReadAsArray()
 
-# print('Getting band 4 (IR)')
-# ir1=ds.GetRasterBand(4).ReadAsArray()
+print('Getting band 4 (IR)')
+ir1=ds.GetRasterBand(4).ReadAsArray()
+
+print('Getting band 5 SWIRS')
+swirs1=ds.GetRasterBand(5).ReadAsArray()
+
+print('Getting band 7 SWIRL')
+swirl1=ds.GetRasterBand(7).ReadAsArray()
+
+print('Getting band 6 temp')
+t1=ds.GetRasterBand(6).ReadAsArray()
+
+print('Replacing nan values with mean')
+w1[np.isnan(w1)]=np.nanmean(w1)
+r[np.isnan(r)]=np.nanmean(r)
+ir1[np.isnan(ir1)]=np.nanmean(ir1)
+swirs1[np.isnan(swirs1)]=np.nanmean(swirs1)
+swirl1[np.isnan(swirl1)]=np.nanmean(swirl1)
+t1[np.isnan(t1)]=np.nanmean(t1)
 
 
-# print('searching area with water')
-# w1=w1/ir1
 
-# print('searching burned area')
-# b1=1/((0.1-r)**2+(0.06-ir1)**2)
-# b1[np.isnan(b1)]=0
-# b1=b1*255/b1.max()
+print('searching area with water')
+w1=w1/ir1
 
-# print('Generating ndvi')
-# r[r==0]=0.1
-# ir1[ir1==0]=0.1
-# diff1=ir1/r
+print('searching burned area')
+b1=(swirs1-swirl1)/(swirs1+swirl1)
 
-# diff1/=(diff1+1)
-# diff1*=255
+print('Searching for high temp')
+t1[np.isnan(t1)]=np.nanmean(t1)
+t1-=t1.mean()
+t1[t1<0]=0
+t1/=10
 
-# openpath="data/"+str(year)+"07"+str(file)+".tif"
-# savepath=str(year)+"07"+str(file)      
+
+print('Generating ndvi')
+r[r==0]=0.1
+ir1[ir1==0]=0.1
+diff1=ir1/r
+
+diff1/=(diff1+1)
+diff1*=255
+
+openpath="data/"+str(year)+"07"+str(file)+".tif"
+savepath=str(year)+"07"+str(file)      
    
-# print('Opening',openpath)
-# print('Savepath = ',savepath)
-# ds = gdal.Open(openpath)
-# print(ds)
+print('Opening',openpath)
+print('Savepath = ',savepath)
+ds = gdal.Open(openpath)
+print(ds)
 
 
 
-# print('Getting band 2 for water')
-# w2=ds.GetRasterBand(2).ReadAsArray()
+print('Getting band 2 for water')
+w2=ds.GetRasterBand(2).ReadAsArray()
 
-# print('Getting band 3')
-# r=ds.GetRasterBand(3).ReadAsArray()
+print('Getting band 3')
+r=ds.GetRasterBand(3).ReadAsArray()
 
-# print('Getting band 4 (IR)')
-# ir2=ds.GetRasterBand(4).ReadAsArray()
+print('Getting band 4 (IR)')
+ir2=ds.GetRasterBand(4).ReadAsArray()
+
+print('Getting band 5 SWIRS')
+swirs2=ds.GetRasterBand(5).ReadAsArray()
+
+print('Getting band 7 SWIRL')
+swirl2=ds.GetRasterBand(7).ReadAsArray()
+
+print('Getting band 6 temp')
+t2=ds.GetRasterBand(6).ReadAsArray()
+
+print('Replacing nan values with mean')
+w2[np.isnan(w2)]=np.nanmean(w2)
+r[np.isnan(r)]=np.nanmean(r)
+ir2[np.isnan(ir2)]=np.nanmean(ir2)
+swirs2[np.isnan(swirs2)]=np.nanmean(swirs2)
+swirl2[np.isnan(swirl2)]=np.nanmean(swirl2)
+t2[np.isnan(t2)]=np.nanmean(t2)
+
+print('searching area with water')
+w2=w2/ir2
+
+print('searching burned area')
+b2=(swirs2-swirl2)/(swirs2+swirl2)
+
+print('Searching for high temp')
+t2[np.isnan(t2)]=np.nanmean(t2)
+t2-=t2.mean()
+t2[t2<0]=0
+t2/=10
 
 
-# print('searching area with water')
-# w2=w2/ir2
+print('Generating ndvi')
+r[r==0]=0.1
+ir2[ir2==0]=0.1
+diff2=ir2/r
 
-# print('searching burned area')
-# b2=1/((0.1-r)**2+(0.06-ir2)**2)
-# b2[np.isnan(b2)]=0
-# b2=b2*255/b2.max()
-
-# print('Generating ndvi')
-# r[r==0]=0.1
-# ir2[ir2==0]=0.1
-# diff2=ir2/r
-
-# diff2/=(diff2+1)
-# diff2*=255
+diff2/=(diff2+1)
+diff2*=255
 
 
-# print('Calculating difference')
-# mean1=np.nanmean(diff1)
-# mean2=np.nanmean(diff2)
+print('Calculating difference')
+mean1=np.nanmean(diff1)
+mean2=np.nanmean(diff2)
 
-# diff1*=((mean2+mean1)/2)/mean1
-# diff2*=((mean2+mean1)/2)/mean2
+diff1*=((mean2+mean1)/2)/mean1
+diff2*=((mean2+mean1)/2)/mean2
 
-# diff1[np.isnan(diff1)]=0
-# diff2[np.isnan(diff2)]=0
-# diff1[diff1>255]=255
-# diff1[diff1<0]=0
-# diff2[diff2>255]=255
-# diff2[diff2<0]=0
+diff1[np.isnan(diff1)]=0
+diff2[np.isnan(diff2)]=0
+diff1[diff1>255]=255
+diff1[diff1<0]=0
+diff2[diff2>255]=255
+diff2[diff2<0]=0
 
-# diff=abs(diff2-diff1)
+diff=abs(diff2-diff1)
 
-# print('Generating image from ndvi difference, water index')
-# for i in range(len(ir1)):
-#     for j in range(len(ir1[0])):
-#         if ir2[i][j]<5 or ir1[i][j]<5 or w1[i][j]>0.8 or w2[i][j]>0.8:
-#             diff[i][j]=0
+
             
-# print('Adding burn Index')
-# diff+=b1
-# diff+=b2
-# diff[np.isnan(diff)]=0
-# diff[diff>255]=255
-# diff[diff<0]=0
+print('Adding burn Index')
+diff+=b1
+diff+=b2
 
-# diff = np.array(diff, dtype=np.uint8)
-# del b1,b2,diff1,diff2,ir1,ir2,r,w1,w2
-# Image.fromarray(diff).show()
+print('Adding high temps')
+diff+=t1
+diff+=t2
+
+print('Generating image from ndvi difference, water index')
+for i in range(len(ir1)):
+    for j in range(len(ir1[0])):
+        if ir2[i][j]<5 or ir1[i][j]<5 or w1[i][j]>0.8 or w2[i][j]>0.8:
+            diff[i][j]=0
+
+print('Processing to form image')
+diff[np.isnan(diff)]=0
+diff[diff>255]=255
+diff[diff<0]=0
+
+diff = np.array(diff, dtype=np.uint8)
+del diff1,diff2,ir1,ir2,r,w1,w2
+Image.fromarray(diff).show()
