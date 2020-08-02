@@ -1,6 +1,13 @@
 # nm395_technocrates
 SIH2020 project on shifting cultivation
 
+RAW splitted data
+---------------------
+
+RGB : https://drive.google.com/drive/folders/19n_mPZHvaWUuzmnXrqo70CMaCaV89AuX?usp=sharing
+
+IR : https://drive.google.com/drive/folders/1BzP_mn3a3V4Mownx7MLXrnPn_6eaHI-L?usp=sharing
+
 
 The project structure:-
 
