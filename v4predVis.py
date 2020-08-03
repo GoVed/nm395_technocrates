@@ -3,13 +3,15 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+doPlot=False
+
 year=2000
 output=[]
 while year<2008:
     month=1
     while month<12:
         idp=1
-        ids=0
+        ids=1404
         model=tf.keras.models.load_model("v4model0.h5")
         openpath=str(year)+"0"+str(month)+str(idp)+"_"+str(ids)+".png"
         rgb=np.array(Image.open("rgb/"+openpath).convert('RGB'),np.uint8)
@@ -50,26 +52,27 @@ while year<2008:
         output.append(np.reshape(pred,(100,100,5)))
         month+=6
     year+=1
+  
     
-#Making plot
 output=np.array(output)
-a=[]
-b=[]
-c=[]
-d=[]
-e=[]
+barren=[]
+crop=[]
+forest=[]
+burnt=[]
+other=[]
 for i in range(len(output)):
     a.append(output[i,:,:,0].mean())
     b.append(output[i,:,:,1].mean())
     c.append(output[i,:,:,2].mean())
     d.append(output[i,:,:,3].mean())
     e.append(output[i,:,:,4].mean())
-    
-plt.plot(a,"red")
-plt.plot(b,"blue")
-plt.plot(c,"green")
-plt.plot(d,"cyan")
-plt.plot(e,"yellow")
+#Making plot
+if doPlot==True  
+    plt.plot(a,"red") #barren
+    plt.plot(b,"blue") #crop
+    plt.plot(c,"green") #forest
+    plt.plot(d,"cyan") #burnt
+    plt.plot(e,"yellow") #other
 
 #Run single
 # month="01"
