@@ -26,6 +26,10 @@ V4
 
 v4preprocess.py : Water index, ndvi and burn index all in one.
 
+v4training.py : Training the DL model.
+
+v4predVis.py : Visualization of the prediction of the model.
+
 
 
 
